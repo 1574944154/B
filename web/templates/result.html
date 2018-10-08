@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://tb.exsba.com/index/qTpciikLf5f8kPCF -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="mfViTQpjeUFf268o00ecwt2HBfB9CRorgxcPGFdR">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">    <title>提交您的B站账号</title>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>-->
+    <![endif]-->
+<style>
+    .sr-only-t{
+        padding-top: 20px;
+        left: 0;
+        position: absolute;
+        right: 0;
+        color: #333;
+    }
+</style></head>
+
+<body>
+<div class="container-fluid">
+    <div class="page-header">
+        <h1><small>答题状态查询</small></h1>
+    </div>
+        <p class="lead">
+        登录用户名: <mark>{{ username }}</mark>
+    </p>
+    <p class="lead">
+        当前状态: <mark id="showStatus">{{ status }}</mark>
+    </p>
+    <p class="lead">
+        一般答题时间在15分钟左右哦 - ( ゜- ゜)
+    </p>
+<!--    <div class="progress">-->
+<!--        <div id="my-progress" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">-->
+<!--            <span class="sr-only-t" id="my-progress-text">大约100%</span>-->
+<!--        </div>-->
+<!--    </div>-->
+    <a style="margin-top: 5vh;" href={{url_for("commit")}} role="button" class="btn btn-primary btn-lg btn-block" id="change-account-button">修改账号信息</a>
+<!--    <a  style="margin-top: 5vh;" href="/index" role="button" class="btn btn-primary btn-lg btn-block" >代答题介绍</a>-->
+</div>
+<!--<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>-->
+<!--<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+<script type="text/javascript">
+    setTimeout(function(){  //使用  setTimeout（）方法设定定时2000毫秒
+    window.location.reload();//页面刷新
+    },10000);
+</script>
+
+</body></html>

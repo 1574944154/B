@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://tb.exsba.com/account/ElN3GUgeT5dhQGah -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">    <title>提交您的B站账号</title>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container-fluid">
+    <div class="page-header">
+        <h1><small>告诉店主B站账号和密码</small></h1>
+    </div>
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <strong>提示!</strong>店主给您答题过程中，请暂时不要使用B站app，同时使用有可能被认为答题无效哦～
+    </div>
+        <form action={{url_for("receive")}} method="post">
+        <div class="form-group">
+            <label for="username">B站账号</label>
+            <input type="text" class="form-control" name="username" placeholder="绑定的手机号" value="" required="" autocomplete="off">
+            <p class="help-block">请填写B站绑定的<b>手机号</b></p>
+        </div>
+        <div class="form-group">
+            <label for="password">B站密码</label>
+            <input type="text" class="form-control" name="password" placeholder="B站登录密码" value="" required="" autocomplete="off">
+            <p class="help-block">请填写B站登录密码</p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">提交人工答题</button>
+    </form>
+
+    <br>
+
+    <form action={{url_for("search")}} method="post">
+        <div class="form-group">
+            <label for="password">B站会员转正答题进度查询</label>
+            <input type="text" class="form-control" name="username" placeholder="请输入B站绑定的手机号码" value="" required="" autocomplete="off">
+            <p class="help-block">请输入B站绑定的手机号码</p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">进度查询</button>
+    </form>
+
+
+</div>
+<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body></html>

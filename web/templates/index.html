@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" >
+    <title>selenium</title>
+</head>
+<body>
+    <form method="POST" style="background: #fff;height: 89px;border-radius: 4px;margin-left: auto;margin-right: auto;">
+        <input type="text" placeholder="账号" name="username" style="width: 273px;height: 44px;color: #000;border: 1px solid black;background: 0 0;padding-left: 15px;font-size: 16px;-webkit-appearance: none;"> <br>
+        <input type="text" placeholder="密码" name="password" style="width: 273px;height: 44px;color: #000;border: 1px solid black;background: 0 0;padding-left: 15px;font-size: 16px;-webkit-appearance: none;"> <br>
+        <input type="submit" value="提交" name="submit" style="width: 290px;height: 44px;line-height: 44px;background: #146fdf;border: none;border-radius: 4px;color: #fff;font-size: 16px;margin-top: 15px;display: block;">
+    </form>
+
+
+    
+    <table border="1" style="position: absolute;left: 10px;top: 200px;">
+        {% for num,score in list1.items() %}
+        <tr>
+            <td>{{num.decode("utf-8")}}</td>
+            <td>{{score.decode("utf-8")}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    <table border="1" style="position: absolute;left: 200px;top: 200px;">
+        {% for num,status in list2.items() %}
+        <tr>
+            <td>{{num.decode("utf-8")}}</td>
+            <td>{{status.decode("utf-8")}}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</body>
+</html>
