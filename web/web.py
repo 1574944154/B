@@ -32,8 +32,18 @@ def receive():
     if request.method == "POST":
         username = request.form.get("username").strip()
         password = request.form.get("password").strip()
-        AccountManage().hmset(kname="account", value={username: password})
-        return redirect(url_for("result", username=username))
+        result = AccountManage().get("status", username)[0]
+        if result:
+            if (result.decode("utf-8") == "4b") or (result.decode("utf-8") == "8"):
+                AccountManage().hmset(kname="account", value={username: password})
+                return redirect(url_for("result", username=username))
+            else:
+                return redirect(url_for("result", username=username))
+        else:
+            AccountManage().hmset(kname="account", value={username: password})
+            return redirect(url_for("result", username=username))
+
+
 
 # 查询进度的页面
 @app.route("/result", methods=["get"])
@@ -46,7 +56,7 @@ def result():
     """
     num = request.args.get("username")
     code_list = {
-        "0b": "您好，客服开始答题，请耐心等待", # 正在登录
+        "0b": "您好，客服开始答题，请耐心等待",  # 正在登录
         "0": "您好，正在答题，请耐心等待",
         "1b": "您好，正在答题，请耐心等待",
         "1": "您好，正在答题，请耐心等待",
@@ -59,8 +69,8 @@ def result():
         "7": "您好，账号存在风险，登录不成功，请修改密码再次提交",
         "4": "未绑定手机号无法答题，请先绑定手机号再次提交",
         "4b": "您好，密码错误，请提供正确的密码",
-        "5": "您好，正在答题，请耐心等待", #最终验证
-	"6b": "您好，正在答题，请耐心等待",
+        "5": "您好，正在答题，请耐心等待",  # 最终验证
+        "6b": "您好，正在答题，请耐心等待",
         "6": "答题已经通过哦，您已经是LV1正式会员啦 ✿✿ヽ(ﾟ▽ﾟ)ノ✿"
     }
     status_code = AccountManage().get("status", num)[0]

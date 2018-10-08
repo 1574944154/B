@@ -18,7 +18,7 @@ class Answer(object):
 	def __init__(self, username, password):
 		option = webdriver.ChromeOptions()
 		option.add_argument("--no-sandbox")
-		# option.add_argument("--headless")
+		option.add_argument("--headless")
 
 		self.browser = webdriver.Chrome(chrome_options=option)
 		self.browser.get("http://account.bilibili.com/answer/base/#/")
@@ -157,8 +157,7 @@ class Answer(object):
 			if CrackGeetest(self.browser).verify():
 				self.conn.hmset("status", {self.username: "0"})
 				logger.info("verify success")
-				self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
-				sleep(4)
+				# self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
 				return True
 			else:
 				self.browser.refresh()
@@ -178,6 +177,7 @@ class Answer(object):
 				if re.findall('不是自己的电脑上不要勾选此项', html, re.S):
 					result = self.login()
 					# self.browser.implicitly_wait(5)
+					sleep(3)
 					# 验证失败
 					if not result:
 						logger.info("验证失败")
@@ -280,5 +280,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("19923393852", "a510b630")
+	a = Answer("19923393852", "658")
 	a.loop()
