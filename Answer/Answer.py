@@ -70,6 +70,7 @@ class Answer(object):
 		self.browser.find_element_by_css_selector(".footer-bottom").click()
 		# input("：")
 		# 保存错误的图片
+		sleep(3)
 		self.browser.implicitly_wait(4)
 		selector = etree.HTML(self.browser.page_source)
 		results = selector.xpath(
@@ -91,6 +92,7 @@ class Answer(object):
 					return False
 				try:
 					self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[3]/div/div[2]/div[2]/div').click()
+					sleep(3)
 					self.browser.implicitly_wait(4)
 					results = self.browser.find_elements_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[@class="exam-list error"]/ul/li[@class=""]')
 					for ele in results:
@@ -99,6 +101,7 @@ class Answer(object):
 				except:
 					# 确定按钮
 					self.browser.find_element_by_css_selector(".footer-bottom").click()
+					sleep(3)
 					self.browser.implicitly_wait(4)
 					if re.findall("手机", self.browser.page_source, re.S):
 						logger.info("请绑定手机号码")
