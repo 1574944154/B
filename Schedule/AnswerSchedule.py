@@ -5,11 +5,11 @@ from multiprocessing import Process
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 def main():
-    account = AccountManage().getall("account")
+    account = AccountManage().getall("bilibili")
     if account:
 
         for user, pwd in account.items():
-            AccountManage().hdel("account", user)
+            AccountManage().hdel("bilibili", user)
             p = Process(target=Answer(user.decode('utf-8'), pwd.decode('utf-8')).loop())
             p.daemon = True
             p.start()

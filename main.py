@@ -6,14 +6,14 @@ from multiprocessing import Process
 
 
 def run():
-	p1 = Process(target=webrun)
+	# p1 = Process(target=webrun)
 
 	p2 = Process(target=AnswerSchedule.run)
 
-	p1.start()
+	# p1.start()
 	p2.start()
 
-	p1.join()
+	# p1.join()
 	p2.join()
 
 

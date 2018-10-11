@@ -8,7 +8,9 @@ from account_manage.Account_Manage import AccountManage
 from time import sleep
 from random import randint
 import requests
-
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class Answer(object):
 			logging.info("点击{}、{}".format(i, j))
 		except:
 			logger.warning("点击{}、{}出错".format(i, j))
-		sleep(randint(4, 6))
+		sleep(randint(8, 10))
 
 	def download(self, url, num):
 		with open("./pic/{}/{}".format(num, url[49:-35]), "wb") as f:
@@ -92,8 +94,8 @@ class Answer(object):
 					return False
 				try:
 					self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[3]/div/div[2]/div[2]/div').click()
-					sleep(3)
-					self.browser.implicitly_wait(4)
+					sleep(5)
+					self.browser.implicitly_wait(10)
 					results = self.browser.find_elements_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[@class="exam-list error"]/ul/li[@class=""]')
 					for ele in results:
 						ele.click()
@@ -101,8 +103,8 @@ class Answer(object):
 				except:
 					# 确定按钮
 					self.browser.find_element_by_css_selector(".footer-bottom").click()
-					sleep(3)
-					self.browser.implicitly_wait(4)
+					sleep(5)
+					self.browser.implicitly_wait(10)
 					if re.findall("手机", self.browser.page_source, re.S):
 						logger.info("请绑定手机号码")
 						self.conn.hmset("status", "4")
@@ -121,7 +123,7 @@ class Answer(object):
 		if len(etree.HTML(self.browser.page_source).xpath(
 				'//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/ul/li[@class="active"]')) == 10:
 			self.browser.find_element_by_css_selector(".footer-bottom").click()
-			sleep(2)
+			sleep(8)
 			self.browser.implicitly_wait(3)
 
 	def three(self):
@@ -144,9 +146,9 @@ class Answer(object):
 		for index, url in enumerate(results, 1):
 			# md5 = result[49:-39]
 			self.click(index, self.findout(url, 3))
-		sleep(10)
+		sleep(5)
 		self.browser.find_element_by_css_selector(".footer-bottom").click()
-		sleep(2)
+		sleep(15)
 		self.browser.implicitly_wait(10)
 
 	# input("：")
@@ -283,5 +285,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("19923393852", "658")
+	a = Answer("19923393852", "a510b630")
 	a.loop()

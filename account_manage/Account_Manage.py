@@ -7,7 +7,7 @@ from redis import BlockingConnectionPool
 class AccountManage(object):
 
     def __init__(self):
-        self.conn = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", password="yuanjie", db=1))
+        self.conn = Redis(connection_pool=BlockingConnectionPool(host="127.0.0.1", password="yuanjie", db=0))
 
 
     def get(self, kname, field):
