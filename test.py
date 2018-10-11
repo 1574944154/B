@@ -27,11 +27,13 @@ def move():
 
 
 def test():
-	browser = webdriver.Chrome()
-	browser.get("https://baidu.com")
-	WebDriverWait(browser, 20).until(EC.text_to_be_present_in_element((By.XPATH, '//*[@id="u1"]/a[1]'), '新闻'))
-	WebDriverWait(browser, 20).until(EC.alert_is_present)
-	print("r")
+	try:
+		1/1
+
+	except:
+		print("错误")
+	else:
+		print("正确")
 
 if __name__ == '__main__':
 	test()

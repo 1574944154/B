@@ -1,4 +1,3 @@
-from account_manage.Account_Manage import AccountManage
 from selenium import webdriver
 from Verification.Verification import CrackGeetest
 from lxml import etree
@@ -11,6 +10,9 @@ import requests
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
+from config import DOWNLOAD_PIC, HEADLESS_ON
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -20,8 +22,8 @@ class Answer(object):
 	def __init__(self, username, password):
 		option = webdriver.ChromeOptions()
 		option.add_argument("--no-sandbox")
-		option.add_argument("--headless")
-
+		if HEADLESS_ON:
+			option.add_argument("--headless")
 		self.browser = webdriver.Chrome(chrome_options=option)
 		self.browser.get("http://account.bilibili.com/answer/base/#/")
 		self.conn = AccountManage()
@@ -35,7 +37,7 @@ class Answer(object):
 			logging.info("点击{}、{}".format(i, j))
 		except:
 			logger.warning("点击{}、{}出错".format(i, j))
-		sleep(randint(8, 10))
+		sleep(randint(3, 4))
 
 	def download(self, url, num):
 		with open("./pic/{}/{}".format(num, url[49:-35]), "wb") as f:
@@ -56,7 +58,8 @@ class Answer(object):
 			return ans.decode("utf-8")
 		else:
 			# print(url[17:-35])
-			self.download(url, num)
+			if DOWNLOAD_PIC:
+				self.download(url, num)
 			return 1
 
 	def one(self):
@@ -115,6 +118,7 @@ class Answer(object):
 					current_url = self.browser.current_url
 					self.browser.implicitly_wait(2)
 
+
 	def two(self):
 		logger.info("卷一：社区规范题（第二部分）")
 		for i in range(1, 11):
@@ -124,7 +128,10 @@ class Answer(object):
 				'//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/ul/li[@class="active"]')) == 10:
 			self.browser.find_element_by_css_selector(".footer-bottom").click()
 			sleep(8)
-			self.browser.implicitly_wait(3)
+			try:
+				WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[6]/ul/li')))
+			except:
+				self.browser.refresh()
 
 	def three(self):
 		logger.info("自选题--选题")
@@ -140,16 +147,20 @@ class Answer(object):
 		sleep(1)
 		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[3]/div/div/div/div/p/a').click()
 		sleep(2)
-		self.browser.implicitly_wait(4)
+		self.browser.implicitly_wait(15)
+
 		selector = etree.HTML(self.browser.page_source)
 		results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
 		for index, url in enumerate(results, 1):
 			# md5 = result[49:-39]
 			self.click(index, self.findout(url, 3))
-		sleep(5)
 		self.browser.find_element_by_css_selector(".footer-bottom").click()
-		sleep(15)
-		self.browser.implicitly_wait(10)
+		sleep(5)
+		try:
+			WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/div/div[1]')))
+		except:
+			self.browser.refresh()
+			return False
 
 	# input("：")
 
@@ -163,6 +174,8 @@ class Answer(object):
 				self.conn.hmset("status", {self.username: "0"})
 				logger.info("verify success")
 				# self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
+				ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[3]/div/div/ul/li[1]/div[4]/a')).perform()
+
 				return True
 			else:
 				self.browser.refresh()
@@ -171,36 +184,64 @@ class Answer(object):
 		return False
 
 	def loop(self):
+
 		count = 0
 		try:
 			while (count<10):
+				self.browser.implicitly_wait(15)
+				# WebDriverWait(self.browser, 10).until_not(EC.text_to_be_present_in_element(By.XPATH, '//*[@id="app"]/div[2]/div[3]/div/div[2]/div[1]/div/div'))
+
 				html = self.browser.page_source
 				selector = etree.HTML(html)
+				try:
+					alert = selector.xpath('//*[@id="app"]/div[2]/div[3]/div/div[2]/div[1]/div/div')[0].text
+				except:
+					logger.info("未检测到弹窗")
+				else:
+					if "服务器出错" in alert:
+						self.browser.refresh()
+						logger.info("服务器出错，刷新中.....")
+					elif "未绑定手机号" in alert:
+						self.conn.hmset("status", {self.username: "4"})
+						logger.error("未绑定手机号码")
+						self.browser.quit()
+						return False
+					elif "12小时内无法再次答题" in alert:
+						self.conn.hmset("status", {self.username: "8"})
+						logger.error("12小时无法答题")
+						self.browser.quit()
+						return False
+
 				# 题目的个数
 				select = len(selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li'))
 				# 登陆
 				if re.findall('不是自己的电脑上不要勾选此项', html, re.S):
 					result = self.login()
-					# self.browser.implicitly_wait(5)
-					sleep(3)
+					self.browser.implicitly_wait(5)
+
 					# 验证失败
 					if not result:
 						logger.info("验证失败")
 						self.conn.hmset("status", {self.username: "0b"})
 						self.browser.quit()
-					elif re.findall("密码错误", self.browser.page_source, re.S):
+						return False
+
+					try:
+						WebDriverWait(self.browser, 8).until(EC.text_to_be_present_in_element((By.XPATH, '//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[4]/div/p'), "用户名或密码错误"))
+					except:
+						pass
+					else:
 						self.conn.hmset("status", {self.username: "4b"})
 						logging.error("密码错误")
 						self.browser.quit()
 						return False
 
-
 					"""
 					更多情况用于扩展
 					"""
-				elif re.findall("服务器出错", html, re.S):
-					self.browser.refresh()
-					logger.error("服务器出错")
+				# elif re.findall("服务器出错", html, re.S):
+				# 	self.browser.refresh()
+				# 	logger.error("服务器出错")
 				# 一阶段
 				elif re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
 					self.conn.hmset("status", {self.username: "1b"})
@@ -226,15 +267,19 @@ class Answer(object):
 				elif re.findall("恭喜!你的答案已提交", html, re.S):
 					logging.info("验证")
 					self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div/div/div[1]').click()
+
 					sleep(1)
 					self.browser.implicitly_wait(5)
 					for i in range(0, 3):
 						if CrackGeetest(self.browser).verify():
+							ActionChains(self.browser).move_to_element(
+								self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							logging.info("验证成功")
 							self.conn.hmset("status", {self.username: "6b"})
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
-							sleep(10)
-							self.browser.implicitly_wait(5)
+							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
+							sleep(5)
+							self.browser.implicitly_wait(15)
 							try:
 								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
 								logger.info("{}分数为：{}".format(self.username, score))
@@ -254,23 +299,22 @@ class Answer(object):
 					self.browser.refresh()
 					logger.info("错误")
 
-				elif re.findall("12小时内无法再次答题!", html, re.S):
-					self.conn.hmset("status", {self.username: "8"})
-					logger.error("12小时无法答题")
-					self.browser.quit()
-					return False
-				elif re.findall("检测到你未绑定手机号码", html, re.S):
-					self.conn.hmset("status", {self.username: "4"})
-					logger.error("未绑定手机号码")
-					self.browser.quit()
-					return False
+				# elif re.findall("12小时内无法再次答题!", html, re.S):
+				# 	self.conn.hmset("status", {self.username: "8"})
+				# 	logger.error("12小时无法答题")
+				# 	self.browser.quit()
+				# 	return False
+				# elif re.findall("检测到你未绑定手机号码", html, re.S):
+				# 	self.conn.hmset("status", {self.username: "4"})
+				# 	logger.error("未绑定手机号码")
+				# 	self.browser.quit()
+				# 	return False
 
-				self.browser.refresh()
+				# self.browser.refresh()
 				count += 1
 				logger.info("count={}".format(count))
-				self.browser.implicitly_wait(10)
 
-		#
+
 		except Exception as e:
 			# self.conn.hmset("status", {self.username: "异常退出"})
 			self.browser.quit()
