@@ -11,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from config import DOWNLOAD_PIC, HEADLESS_ON
+from config import DOWNLOAD_PIC, HEADLESS_ON, CLICK_SPEED
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class Answer(object):
 			logging.info("点击{}、{}".format(i, j))
 		except:
 			logger.warning("点击{}、{}出错".format(i, j))
-		sleep(randint(3, 4))
+		sleep(randint(CLICK_SPEED-2, CLICK_SPEED+2))
 
 	def download(self, url, num):
 		with open("./pic/{}/{}".format(num, url[49:-35]), "wb") as f:

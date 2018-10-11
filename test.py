@@ -36,4 +36,4 @@ def test():
 		print("正确")
 
 if __name__ == '__main__':
-	test()
+	remove()

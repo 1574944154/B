@@ -32,6 +32,8 @@ def receive():
     if request.method == "POST":
         username = request.form.get("username").strip()
         password = request.form.get("password").strip()
+        if username=="" or password=="":
+            return render_template("commit.html")
         result = AccountManage().get("status", username)[0]
         if result:
             if (result.decode("utf-8") == "4b") or (result.decode("utf-8") == "8"):
@@ -85,7 +87,9 @@ def result():
 # 接收
 @app.route("/search", methods=["POST"])
 def search():
-    username = request.form.get("username")
+    username = request.form.get("username").strip()
+    if username == "":
+        return render_template("commit.html")
     return redirect(url_for("result", username=username))
 
 def run():

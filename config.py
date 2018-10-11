@@ -30,3 +30,4 @@ ANSWER
 # chromeheadless
 HEADLESS_ON = True
 DOWNLOAD_PIC = True
+CLICK_SPEED = 10
