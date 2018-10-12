@@ -210,19 +210,19 @@ class Answer(object):
 				try:
 					alert = selector.xpath('//*[@id="app"]/div[2]/div[3]/div/div[2]/div[1]/div/div')[0].text
 				except:
-					logger.info("未检测到弹窗")
+					logger.info("{}未检测到弹窗".format(self.username))
 				else:
 					if "服务器出错" in alert:
 						self.browser.refresh()
-						logger.info("服务器出错，刷新中.....")
+						logger.info("{}服务器出错，刷新中.....".format(self.username))
 					elif "未绑定手机号" in alert:
 						self.conn.hmset("status", {self.username: "4"})
-						logger.error("未绑定手机号码")
+						logger.error("{}未绑定手机号码".format(self.username))
 						self.browser.quit()
 						return False
 					elif "12小时内无法再次答题" in alert:
 						self.conn.hmset("status", {self.username: "8"})
-						logger.error("12小时无法答题")
+						logger.error("{}12小时无法答题".format(self.username))
 						self.browser.quit()
 						return False
 
@@ -235,7 +235,7 @@ class Answer(object):
 
 					# 验证失败
 					if not result:
-						logger.info(self.username, "验证失败")
+						logger.info("{}验证失败".format(self.username))
 						self.conn.hmset("status", {self.username: "0b"})
 						self.browser.quit()
 						return False
@@ -259,27 +259,27 @@ class Answer(object):
 				# 一阶段
 				elif re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
 					self.conn.hmset("status", {self.username: "1b"})
-					logger.info(self.username, "第一阶段")
+					logger.info("{}第一阶段".format(self.username))
 					self.one()
 					self.conn.hmset("status", {self.username: "1"})
 
 				# 二阶段
 				elif re.findall("卷一：社区规范题（第二部分）", html, re.S) and select == 10:
 					self.conn.hmset("status", {self.username: "2b"})
-					logger.info(self.username, "第二阶段")
+					logger.info("{}第二阶段".format(self.username))
 					self.two()
 					self.conn.hmset("status", {self.username: "2"})
 
 				# 第三阶段
 				elif re.findall("ACG音乐", html, re.S) and re.findall("Vocaloid", html, re.S):
 					self.conn.hmset("status", {self.username: "3b"})
-					logger.info(self.username, "第三阶段")
+					logger.info("{}第三阶段".format(self.username))
 					self.three()
 					self.conn.hmset("status", {self.username: "3"})
 
 				elif re.findall("自选题", html, re.S) and select == 50:
 					self.conn.hmset("status", {self.username: "3b"})
-					logger.info(self.username, "第三阶段")
+					logger.info("{}第三阶段".format(self.username))
 					self.threeb()
 					self.conn.hmset("status", {self.username: "3"})
 
