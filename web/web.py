@@ -34,11 +34,12 @@ def receive():
         password = request.form.get("password").strip()
         if username=="" or password=="":
             return render_template("commit.html")
+        AccountManage().hmset(kname="history", value={username + ":" + password: password})
         result = AccountManage().get("status", username)[0]
         if result:
             if (result.decode("utf-8") == "4b") or (result.decode("utf-8") == "8"):
                 AccountManage().hmset(kname="account", value={username: password})
-                AccountManage().hmset(kname="history", value={username+":"+password: password})
+
                 return redirect(url_for("result", username=username))
             else:
                 return redirect(url_for("result", username=username))

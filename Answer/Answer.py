@@ -180,7 +180,7 @@ class Answer(object):
 
 	# 登陆
 	def login(self):
-		self.browser.implicitly_wait(3)
+
 		self.browser.find_element_by_id("login-username").send_keys(self.username)
 		self.browser.find_element_by_id("login-passwd").send_keys(self.password)
 		for i in range(0, 3):
@@ -230,8 +230,14 @@ class Answer(object):
 				select = len(selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li'))
 				# 登陆
 				if re.findall('不是自己的电脑上不要勾选此项', html, re.S):
+					try:
+						WebDriverWait(self.browser, 20).until(
+							EC.presence_of_element_located((By.XPATH, '//*[@id="gc-box"]/div/div[3]/div[2]')))
+					except:
+						self.browser.refresh()
+						break
 					result = self.login()
-					self.browser.implicitly_wait(5)
+					self.browser.implicitly_wait(15)
 
 					# 验证失败
 					if not result:
@@ -349,5 +355,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("704184761@qq.com", "cws7310001")
+	a = Answer("15345536357", "xy20090721")
 	a.loop()
