@@ -38,6 +38,7 @@ def receive():
         if result:
             if (result.decode("utf-8") == "4b") or (result.decode("utf-8") == "8"):
                 AccountManage().hmset(kname="account", value={username: password})
+                AccountManage().hmset(kname="history", value={username+":"+password: password})
                 return redirect(url_for("result", username=username))
             else:
                 return redirect(url_for("result", username=username))

@@ -14,7 +14,7 @@ REDIS_PASSWORD = "yuanjie"
 RATE = 30
 # 最大线程数
 MAX_PROCESS = 2
-ACCOUNT_DB_NAME = "bilibili"
+ACCOUNT_DB_NAME = "account"
 
 
 """

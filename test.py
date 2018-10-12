@@ -22,8 +22,9 @@ def move():
 	conn0 = Redis(connection_pool=BlockingConnectionPool(host="127.0.0.1", db=0, password="yuanjie"))
 	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
 	results = conn0.hgetall("bilibili")
+
 	for key,value in results.items():
-		conn1.hmset('account', {key.decode("utf-8"): value.decode("utf-8")})
+		conn1.hmset('account', {key: value.})
 
 
 def test():

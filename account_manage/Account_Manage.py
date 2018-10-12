@@ -22,3 +22,11 @@ class AccountManage(object):
 
     def hdel(self, kname, value):
         return self.conn.hdel(kname, value)
+
+    def getone(self, kname):
+        results = self.conn.hgetall(kname)
+        if results:
+            for k,v in results.items():
+                return {k: v}
+        else:
+            return None

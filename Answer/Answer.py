@@ -159,7 +159,6 @@ class Answer(object):
 		try:
 			WebDriverWait(self.browser, 40).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/p[1]')))
 		except:
-			self.browser.refresh()
 			return False
 
 	def threeb(self):
@@ -174,7 +173,6 @@ class Answer(object):
 		try:
 			WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/div/div[1]')))
 		except:
-			self.browser.refresh()
 			return False
 
 
@@ -237,7 +235,7 @@ class Answer(object):
 
 					# 验证失败
 					if not result:
-						logger.info("验证失败")
+						logger.info(self.username, "验证失败")
 						self.conn.hmset("status", {self.username: "0b"})
 						self.browser.quit()
 						return False
@@ -261,27 +259,27 @@ class Answer(object):
 				# 一阶段
 				elif re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
 					self.conn.hmset("status", {self.username: "1b"})
-					logger.info("第一阶段")
+					logger.info(self.username, "第一阶段")
 					self.one()
 					self.conn.hmset("status", {self.username: "1"})
 
 				# 二阶段
 				elif re.findall("卷一：社区规范题（第二部分）", html, re.S) and select == 10:
 					self.conn.hmset("status", {self.username: "2b"})
-					logger.info("第二阶段")
+					logger.info(self.username, "第二阶段")
 					self.two()
 					self.conn.hmset("status", {self.username: "2"})
 
 				# 第三阶段
 				elif re.findall("ACG音乐", html, re.S) and re.findall("Vocaloid", html, re.S):
 					self.conn.hmset("status", {self.username: "3b"})
-					logger.info("第三阶段")
+					logger.info(self.username, "第三阶段")
 					self.three()
 					self.conn.hmset("status", {self.username: "3"})
 
 				elif re.findall("自选题", html, re.S) and select == 50:
 					self.conn.hmset("status", {self.username: "3b"})
-					logger.info("第三阶段")
+					logger.info(self.username, "第三阶段")
 					self.threeb()
 					self.conn.hmset("status", {self.username: "3"})
 
@@ -301,7 +299,7 @@ class Answer(object):
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
 							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							sleep(5)
-							WebDriverWait(self.browser, 30).until(EC.presence_of_element_located(By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]'))
+							WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]')))
 							try:
 								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
 								logger.info("{}分数为：{}".format(self.username, score))
@@ -351,5 +349,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("19923393852", "a510b630")
+	a = Answer("704184761@qq.com", "cws7310001")
 	a.loop()
