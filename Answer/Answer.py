@@ -155,12 +155,28 @@ class Answer(object):
 			# md5 = result[49:-39]
 			self.click(index, self.findout(url, 3))
 		self.browser.find_element_by_css_selector(".footer-bottom").click()
-		sleep(5)
+		sleep(2)
+		try:
+			WebDriverWait(self.browser, 40).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/p[1]')))
+		except:
+			self.browser.refresh()
+			return False
+
+	def threeb(self):
+		self.browser.implicitly_wait(10)
+		selector = etree.HTML(self.browser.page_source)
+		results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
+		for index, url in enumerate(results, 1):
+			# md5 = result[49:-39]
+			self.click(index, self.findout(url, 3))
+		self.browser.find_element_by_css_selector(".footer-bottom").click()
+		sleep(15)
 		try:
 			WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/div/div[1]')))
 		except:
 			self.browser.refresh()
 			return False
+
 
 	# input("：")
 
@@ -261,6 +277,12 @@ class Answer(object):
 					self.conn.hmset("status", {self.username: "3b"})
 					logger.info("第三阶段")
 					self.three()
+					self.conn.hmset("status", {self.username: "3"})
+
+				elif re.findall("自选题", html, re.S) and select == 50:
+					self.conn.hmset("status", {self.username: "3b"})
+					logger.info("第三阶段")
+					self.threeb()
 					self.conn.hmset("status", {self.username: "3"})
 
 				# 最后验证阶段

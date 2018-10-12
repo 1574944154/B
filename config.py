@@ -28,6 +28,6 @@ WEB服务
 ANSWER
 """
 # chromeheadless
-HEADLESS_ON = True
+HEADLESS_ON = False
 DOWNLOAD_PIC = True
 CLICK_SPEED = 10
