@@ -301,7 +301,7 @@ class Answer(object):
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
 							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							sleep(5)
-							self.browser.implicitly_wait(15)
+							WebDriverWait(self.browser, 30).until(EC.presence_of_element_located(By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]'))
 							try:
 								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
 								logger.info("{}分数为：{}".format(self.username, score))
