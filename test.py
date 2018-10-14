@@ -24,17 +24,14 @@ def move():
 	results = conn0.hgetall("bilibili")
 
 	for key,value in results.items():
-		conn1.hmset('account', {key: value.})
+		conn0.hmset('account', {key: value})
 
 
 def test():
-	try:
-		1/1
-
-	except:
-		print("错误")
-	else:
-		print("正确")
+	b = webdriver.Chrome()
+	b.get("https://www.bilibili.com/video/av12097513")
+	with open("source_page.txt", "w", encoding="utf-8") as f:
+		f.write(b.page_source)
 
 if __name__ == '__main__':
 	move()

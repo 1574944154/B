@@ -2,8 +2,8 @@
 """
 redis数据库连接信息
 """
-REDIS_HOST = "127.0.0.1"
-REDIS_DB = 0
+REDIS_HOST = "39.106.122.164"
+REDIS_DB = 1
 REDIS_PASSWORD = "yuanjie"
 
 
@@ -28,6 +28,6 @@ WEB服务
 ANSWER
 """
 # chromeheadless
-HEADLESS_ON = False
-DOWNLOAD_PIC = True
+HEADLESS_ON = True
+DOWNLOAD_PIC = False
 CLICK_SPEED = 10

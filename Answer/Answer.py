@@ -20,13 +20,15 @@ logger = logging.getLogger(__name__)
 class Answer(object):
 
 	def __init__(self, username, password):
+		self.conn = AccountManage()
+		self.conn.hmset("status", {username: "-1"})
 		option = webdriver.ChromeOptions()
 		option.add_argument("--no-sandbox")
 		if HEADLESS_ON:
 			option.add_argument("--headless")
 		self.browser = webdriver.Chrome(chrome_options=option)
 		self.browser.get("http://account.bilibili.com/answer/base/#/")
-		self.conn = AccountManage()
+
 		self.username = username
 		self.password = password
 
@@ -355,5 +357,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("15345536357", "xy20090721")
+	a = Answer("19923393852", "a510b630")
 	a.loop()
