@@ -5,7 +5,8 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-
+from apscheduler.schedulers.blocking import BlockingScheduler
+import time
 
 def remove():
 	conn = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
@@ -20,11 +21,11 @@ def remove():
 
 def move():
 	conn0 = Redis(connection_pool=BlockingConnectionPool(host="127.0.0.1", db=0, password="yuanjie"))
-	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
+	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=2, password="yuanjie"))
 	results = conn0.hgetall("bilibili")
 
 	for key,value in results.items():
-		conn0.hmset('account', {key: value})
+		conn1.hmset('account', {key: value})
 
 
 def test():
@@ -33,5 +34,14 @@ def test():
 	with open("source_page.txt", "w", encoding="utf-8") as f:
 		f.write(b.page_source)
 
+def AP():
+	def e():
+		print(time.ctime())
+		time.sleep(6)
+		print(time.ctime())
+	sch = BlockingScheduler()
+	sch.add_job(e, "interval", seconds=5, max_instances=2)
+	sch.start()
+
 if __name__ == '__main__':
-	move()
+	AP()

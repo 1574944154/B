@@ -6,10 +6,11 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from config import MAX_PROCESS, RATE, ACCOUNT_DB_NAME
 
 def main():
-    account = AccountManage().getall(ACCOUNT_DB_NAME)
+    account = AccountManage().getone(ACCOUNT_DB_NAME)
     if account:
         for user, pwd in account.items():
             AccountManage().hdel(ACCOUNT_DB_NAME, user)
+            AccountManage().hmset(ACCOUNT_DB_NAME, {user: "-1"})
             Answer(user.decode('utf-8'), pwd.decode('utf-8')).loop()
 
 

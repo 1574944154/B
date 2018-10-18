@@ -21,7 +21,7 @@ class Answer(object):
 
 	def __init__(self, username, password):
 		self.conn = AccountManage()
-		self.conn.hmset("status", {username: "-1"})
+
 		option = webdriver.ChromeOptions()
 		option.add_argument("--no-sandbox")
 		if HEADLESS_ON:
@@ -94,7 +94,7 @@ class Answer(object):
 			while (self.browser.current_url == current_url):
 				if re.findall("手机", self.browser.page_source, re.S):
 					logger.info("请绑定手机号码")
-					self.conn.hmset("status", "4")
+					self.conn.hmset("status", {self.username: "4"})
 					self.browser.quit()
 					return False
 				try:
@@ -112,7 +112,7 @@ class Answer(object):
 					self.browser.implicitly_wait(10)
 					if re.findall("手机", self.browser.page_source, re.S):
 						logger.info("请绑定手机号码")
-						self.conn.hmset("status", "4")
+						self.conn.hmset("status", {self.username: "4"})
 						self.browser.quit()
 						return False
 
@@ -357,5 +357,5 @@ class Answer(object):
 
 ''
 if __name__ == '__main__':
-	a = Answer("19923393852", "a510b630")
+	a = Answer("15212532361", "12345qwe.")
 	a.loop()

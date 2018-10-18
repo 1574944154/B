@@ -2,9 +2,9 @@
 """
 redis数据库连接信息
 """
-REDIS_HOST = "39.106.122.164"
+REDIS_HOST = ""
 REDIS_DB = 1
-REDIS_PASSWORD = "yuanjie"
+REDIS_PASSWORD = ""
 
 
 """
@@ -14,7 +14,7 @@ REDIS_PASSWORD = "yuanjie"
 RATE = 30
 # 最大线程数
 MAX_PROCESS = 2
-ACCOUNT_DB_NAME = "account"
+ACCOUNT_DB_NAME = ""
 
 
 """
