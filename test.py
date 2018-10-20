@@ -20,12 +20,14 @@ def remove():
 		conn.hdel("status", i)
 
 def move():
-	conn0 = Redis(connection_pool=BlockingConnectionPool(host="127.0.0.1", db=0, password="yuanjie"))
-	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=2, password="yuanjie"))
-	results = conn0.hgetall("bilibili")
+	conn0 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
+	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=4, password="yuanjie"))
+	results = conn0.hgetall("1")
+	for k, v in results.items():
+		conn1.hmset("1", {k.decode("utf-8"): v.decode("utf-8")})
+		print(k, v)
 
-	for key,value in results.items():
-		conn1.hmset('account', {key: value})
+
 
 
 def test():
@@ -34,14 +36,7 @@ def test():
 	with open("source_page.txt", "w", encoding="utf-8") as f:
 		f.write(b.page_source)
 
-def AP():
-	def e():
-		print(time.ctime())
-		time.sleep(6)
-		print(time.ctime())
-	sch = BlockingScheduler()
-	sch.add_job(e, "interval", seconds=5, max_instances=2)
-	sch.start()
+
 
 if __name__ == '__main__':
-	AP()
+	move()

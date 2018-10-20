@@ -3,7 +3,7 @@ from Verification.Verification import CrackGeetest
 from lxml import etree
 import re
 import logging
-from account_manage.Account_Manage import AccountManage
+from account_manage.Account_Manage import AccountDB
 from time import sleep
 from random import randint
 import requests
@@ -17,20 +17,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class Answer(object):
+class Hyzz_answer(object):
 
-	def __init__(self, username, password):
-		self.conn = AccountManage()
-
-		option = webdriver.ChromeOptions()
-		option.add_argument("--no-sandbox")
-		if HEADLESS_ON:
-			option.add_argument("--headless")
-		self.browser = webdriver.Chrome(chrome_options=option)
-		self.browser.get("http://account.bilibili.com/answer/base/#/")
-
+	def __init__(self, browser, username, password):
+		self.conn = AccountDB()
+		self.browser = browser
+		# option = webdriver.ChromeOptions()
+		# option.add_argument("--no-sandbox")
+		# if HEADLESS_ON:
+		# 	option.add_argument("--headless")
+		# self.browser = webdriver.Chrome(chrome_options=option)
 		self.username = username
 		self.password = password
+		self.browser.get("http://account.bilibili.com/answer/base/#/")
+		self.browser.implicitly_wait(10)
+
 
 	def click(self, i, j):
 		try:
@@ -50,7 +51,7 @@ class Answer(object):
 
 	def findout(self, url, num=1):
 		try:
-			ans = self.conn.get(num, url[49:-39])[0]
+			ans = self.conn.hmget(num, url[49:-39])[0]
 		except:
 			logger.error("连接redis服务器出错")
 			self.browser.quit()
@@ -66,7 +67,6 @@ class Answer(object):
 
 	def one(self):
 		logger.info("卷一：社区规范题（第一部分）")
-		self.conn.hmset("user", {self.username: self.password})
 		selector = etree.HTML(self.browser.page_source)
 		results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
 		for index, url in enumerate(results, 1):
@@ -94,7 +94,7 @@ class Answer(object):
 			while (self.browser.current_url == current_url):
 				if re.findall("手机", self.browser.page_source, re.S):
 					logger.info("请绑定手机号码")
-					self.conn.hmset("status", {self.username: "4"})
+					self.conn.hmset("status:"+self.username, {"status": "4"})
 					self.browser.quit()
 					return False
 				try:
@@ -112,7 +112,7 @@ class Answer(object):
 					self.browser.implicitly_wait(10)
 					if re.findall("手机", self.browser.page_source, re.S):
 						logger.info("请绑定手机号码")
-						self.conn.hmset("status", {self.username: "4"})
+						self.conn.hmset("status:"+self.username, {"status": "4"})
 						self.browser.quit()
 						return False
 
@@ -181,23 +181,23 @@ class Answer(object):
 	# input("：")
 
 	# 登陆
-	def login(self):
-
-		self.browser.find_element_by_id("login-username").send_keys(self.username)
-		self.browser.find_element_by_id("login-passwd").send_keys(self.password)
-		for i in range(0, 3):
-			if CrackGeetest(self.browser).verify():
-				self.conn.hmset("status", {self.username: "0"})
-				logger.info("verify success")
-				# self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
-				ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[3]/div/div/ul/li[1]/div[4]/a')).perform()
-
-				return True
-			else:
-				self.browser.refresh()
-				logger.info("verify fail")
-				self.login()
-		return False
+	# def login(self):
+	#
+	# 	self.browser.find_element_by_id("login-username").send_keys(self.username)
+	# 	self.browser.find_element_by_id("login-passwd").send_keys(self.password)
+	# 	for i in range(0, 3):
+	# 		if CrackGeetest(self.browser).verify():
+	# 			self.conn.hmset("status", {self.username: "0"})
+	# 			logger.info("verify success")
+	# 			# self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
+	# 			ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[3]/div/div/ul/li[1]/div[4]/a')).perform()
+	#
+	# 			return True
+	# 		else:
+	# 			self.browser.refresh()
+	# 			logger.info("verify fail")
+	# 			self.login()
+	# 	return False
 
 	def loop(self):
 
@@ -218,78 +218,45 @@ class Answer(object):
 						self.browser.refresh()
 						logger.info("{}服务器出错，刷新中.....".format(self.username))
 					elif "未绑定手机号" in alert:
-						self.conn.hmset("status", {self.username: "4"})
+						self.conn.hmset("status:"+self.username, {"status": "4"})
 						logger.error("{}未绑定手机号码".format(self.username))
 						self.browser.quit()
 						return False
 					elif "12小时内无法再次答题" in alert:
-						self.conn.hmset("status", {self.username: "8"})
+						self.conn.hmset("status:"+self.username, {"status": "8"})
 						logger.error("{}12小时无法答题".format(self.username))
 						self.browser.quit()
 						return False
 
 				# 题目的个数
 				select = len(selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li'))
-				# 登陆
-				if re.findall('不是自己的电脑上不要勾选此项', html, re.S):
-					try:
-						WebDriverWait(self.browser, 20).until(
-							EC.presence_of_element_located((By.XPATH, '//*[@id="gc-box"]/div/div[3]/div[2]')))
-					except:
-						self.browser.refresh()
-						break
-					result = self.login()
-					self.browser.implicitly_wait(15)
 
-					# 验证失败
-					if not result:
-						logger.info("{}验证失败".format(self.username))
-						self.conn.hmset("status", {self.username: "0b"})
-						self.browser.quit()
-						return False
 
-					try:
-						WebDriverWait(self.browser, 8).until(EC.text_to_be_present_in_element((By.XPATH, '//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[4]/div/p'), "用户名或密码错误"))
-					except:
-						pass
-					else:
-						self.conn.hmset("status", {self.username: "4b"})
-						logging.error("密码错误")
-						self.browser.quit()
-						return False
-
-					"""
-					更多情况用于扩展
-					"""
-				# elif re.findall("服务器出错", html, re.S):
-				# 	self.browser.refresh()
-				# 	logger.error("服务器出错")
-				# 一阶段
-				elif re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
-					self.conn.hmset("status", {self.username: "1b"})
+				if re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
+					self.conn.hmset("status:"+self.username, {"status": "1b"})
 					logger.info("{}第一阶段".format(self.username))
 					self.one()
-					self.conn.hmset("status", {self.username: "1"})
+					self.conn.hmset("status:"+self.username, {"status": "1"})
 
 				# 二阶段
 				elif re.findall("卷一：社区规范题（第二部分）", html, re.S) and select == 10:
-					self.conn.hmset("status", {self.username: "2b"})
+					self.conn.hmset("status:"+self.username, {"status": "2b"})
 					logger.info("{}第二阶段".format(self.username))
 					self.two()
-					self.conn.hmset("status", {self.username: "2"})
+					self.conn.hmset("status:"+self.username, {"status": "2"})
 
 				# 第三阶段
 				elif re.findall("ACG音乐", html, re.S) and re.findall("Vocaloid", html, re.S):
-					self.conn.hmset("status", {self.username: "3b"})
+					self.conn.hmset("status:"+self.username, {"status": "3b"})
 					logger.info("{}第三阶段".format(self.username))
 					self.three()
-					self.conn.hmset("status", {self.username: "3"})
+					self.conn.hmset("status:"+self.username, {"status": "3"})
 
 				elif re.findall("自选题", html, re.S) and select == 50:
-					self.conn.hmset("status", {self.username: "3b"})
+					self.conn.hmset("status:"+self.username, {"status": "3b"})
 					logger.info("{}第三阶段".format(self.username))
 					self.threeb()
-					self.conn.hmset("status", {self.username: "3"})
+					self.conn.hmset("status:"+self.username, {"status": "3"})
 
 				# 最后验证阶段
 				elif re.findall("恭喜!你的答案已提交", html, re.S):
@@ -303,7 +270,7 @@ class Answer(object):
 							ActionChains(self.browser).move_to_element(
 								self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							logging.info("验证成功")
-							self.conn.hmset("status", {self.username: "6b"})
+							self.conn.hmset("status:"+self.username, {"status": "6b"})
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
 							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							sleep(5)
@@ -312,7 +279,7 @@ class Answer(object):
 								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
 								logger.info("{}分数为：{}".format(self.username, score))
 								self.conn.hmset("complete", {self.username: score})
-								self.conn.hmset("status", {self.username: "6"})
+								self.conn.hmset("status:"+self.username, {"status": "6"})
 							except:
 								logger.info("读取分数失败")
 							# self.conn.hdel("status", self.username)
@@ -323,7 +290,7 @@ class Answer(object):
 							self.browser.implicitly_wait(5)
 							self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div/div/div[1]').click()
 							self.browser.implicitly_wait(5)
-					self.conn.hmset("status", {self.username: "5"})
+					self.conn.hmset("status:"+self.username, {"status": "5"})
 					self.browser.refresh()
 					logger.info("错误")
 
@@ -346,16 +313,16 @@ class Answer(object):
 		except Exception as e:
 			# self.conn.hmset("status", {self.username: "异常退出"})
 			self.browser.quit()
-			self.conn.hmset("account", {self.username: self.password})
+			self.conn.rpush("account", {"username":self.username, "password": self.password})
 			logger.error("异常退出{}".format(e))
 			return False
 
-		self.conn.hmset("status", {self.username: "7"})	# 账号存在风险，需要更改密码
+		self.conn.hmset("status:"+self.username, {"status": "7"})	# 账号存在风险，需要更改密码
 		self.browser.quit()
 		logger.info("超时")
 		return False
 
 ''
 if __name__ == '__main__':
-	a = Answer("15212532361", "12345qwe.")
+	a = Hyzz_answer("15212532361", "12345qwe.")
 	a.loop()
