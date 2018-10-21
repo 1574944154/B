@@ -45,7 +45,6 @@ class Xhwanser(object):
 			answerIdString += str(answer['id']) + ","
 			ans = self.conn.get("bilibili:"+str(answer['id'])+":answer")
 			if ans:
-				ans = ans.decode("utf-8")
 				answerString += ans+","
 			else:
 				answerString += "1,"
@@ -77,6 +76,7 @@ class Xhwanser(object):
 		while(n<10):
 			if self.answer():
 				self.conn.hmset("status:"+self.username, {"status": "10"})
+				self.conn.hmset("complete", {self.username: "xxx"})
 				logger.info("答题成功")
 				return True
 			else:

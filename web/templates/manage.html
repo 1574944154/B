@@ -16,8 +16,8 @@
     <table border="1" style="position: absolute;left: 10px;top: 200px;">
         {% for num,score in list1.items() %}
         <tr>
-            <td>{{num.decode("utf-8")}}</td>
-            <td>{{score.decode("utf-8")}}</td>
+            <td>{{num}}</td>
+            <td>{{score}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -26,8 +26,8 @@
     <table border="1" style="position: absolute;left: 200px;top: 200px;">
         {% for num,status in list2.items() %}
         <tr>
-            <td>{{num.decode("utf-8")}}</td>
-            <td>{{status.decode("utf-8")}}</td>
+            <td>{{num}}</td>
+            <td>{{status}}</td>
         </tr>
         {% endfor %}
 

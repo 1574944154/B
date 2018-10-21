@@ -15,7 +15,7 @@ def task():
     conn = AccountDB()
     account = conn.lpop(ACCOUNT_DB_NAME)
     if account:
-        account = json.loads(account.decode('utf-8').replace("'", '"'))
+        account = json.loads(account.replace("'", '"'))
         username = account['username']
         password = account['password']
         conn.hdel(ACCOUNT_DB_NAME, username)

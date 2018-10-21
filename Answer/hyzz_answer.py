@@ -58,7 +58,7 @@ class Hyzz_answer(object):
 			return False
 
 		if ans:
-			return ans.decode("utf-8")
+			return ans
 		else:
 			# print(url[17:-35])
 			if DOWNLOAD_PIC:

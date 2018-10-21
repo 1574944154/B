@@ -1,5 +1,5 @@
 from redis import Redis
-from redis import BlockingConnectionPool
+from redis.connection import BlockingConnectionPool
 from config import REDIS_DB, REDIS_PASSWORD, REDIS_HOST
 
 
@@ -8,7 +8,7 @@ from config import REDIS_DB, REDIS_PASSWORD, REDIS_HOST
 class AccountDB(object):
 
     def __init__(self):
-        self.conn = Redis(connection_pool=BlockingConnectionPool(host=REDIS_HOST, password=REDIS_PASSWORD, db=REDIS_DB))
+        self.conn = Redis(connection_pool=BlockingConnectionPool(host=REDIS_HOST, password=REDIS_PASSWORD, db=REDIS_DB, decode_responses=True))
 
     def hmget(self, kname, field):
         return self.conn.hmget(kname, field)
@@ -30,3 +30,10 @@ class AccountDB(object):
 
     def get(self, name):
         return self.conn.get(name)
+
+    def hkeys(self, name):
+        return self.conn.hkeys(name)
+
+if __name__ == '__main__':
+    conn = AccountDB()
+    print(conn.hgetall("complete"))

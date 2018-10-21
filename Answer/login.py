@@ -8,6 +8,7 @@ from account_manage.Account_Manage import AccountDB
 from time import sleep
 import json
 import requests
+from config import HEADLESS_ON
 
 
 
@@ -21,7 +22,8 @@ class Login(object):
 		self.password = password
 		options = webdriver.ChromeOptions()
 		options.add_argument("--no-sandbox")
-		# options.add_argument("--headless")
+		if HEADLESS_ON:
+			options.add_argument("--headless")
 		self.browser = webdriver.Chrome(chrome_options=options)
 		self.browser.get(self.url)
 		self.conn = AccountDB()
@@ -57,7 +59,7 @@ class Login(object):
 						return False
 					else:
 						logger.info("密码错误")
-						self.conn.hmset("status:" + self.username, {"status": "4"})
+						self.conn.hmset("status:" + self.username, {"status": "4b"})
 						return False
 				self.conn.hmset("user", {self.username: self.password})
 				logger.info("登陆成功")
@@ -90,6 +92,9 @@ class Login(object):
 		else:
 			self.conn.hmset("status:"+self.username, {"type": "1"})
 			return False
+
+	def __del__(self):
+		self.browser.quit()
 
 
 
