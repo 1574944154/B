@@ -18,7 +18,6 @@ def task():
         account = json.loads(account.replace("'", '"'))
         username = account['username']
         password = account['password']
-        conn.hdel(ACCOUNT_DB_NAME, username)
         conn.hmset("status:"+username, {"status": "-1"})
         user = Login(username, password)
         pass_correct = user.login()

@@ -40,7 +40,6 @@ class Xhwanser(object):
 
 		answerString = ""
 		answerIdString = ""
-		print(answers)
 		for answer in answers:
 			answerIdString += str(answer['id']) + ","
 			ans = self.conn.get("bilibili:"+str(answer['id'])+":answer")
