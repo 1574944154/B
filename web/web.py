@@ -1,9 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
 from account_manage.mysql_db import Mysql_db
 from multiprocessing import Process
-from flask_wtf import FlaskForm
-from wtforms import SelectField, BooleanField, PasswordField
-from wtforms.validators import DataRequired
 """
 
 提供WEB服务
