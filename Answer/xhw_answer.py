@@ -2,7 +2,7 @@ import requests
 import json
 import logging
 from time import sleep
-from account_manage.Account_Manage import AccountDB
+from account_manage.mysql_db import Mysql_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,8 +19,8 @@ class Xhwanser(object):
 		self.session = requests.session()
 		self.username = username
 		self.headers['Cookie'] = self.cookie_str()
-		self.conn = AccountDB()
-		self.conn.hmset("status:" + self.username, {"status": "1"})
+		self.conn = Mysql_db()
+		self.conn.set_status(self.username, "1")
 
 	def cookie_str(self):
 		cookie_str = ""
@@ -42,7 +42,7 @@ class Xhwanser(object):
 		answerIdString = ""
 		for answer in answers:
 			answerIdString += str(answer['id']) + ","
-			ans = self.conn.get("bilibili:"+str(answer['id'])+":answer")
+			ans = self.conn.get_ans("xhw", str(answer['id']))
 			if ans:
 				answerString += ans+","
 			else:
@@ -74,14 +74,14 @@ class Xhwanser(object):
 		n = 0
 		while(n<10):
 			if self.answer():
-				self.conn.hmset("status:"+self.username, {"status": "10"})
-				self.conn.hmset("complete", {self.username: "xxx"})
+				self.conn.set_status(self.username, "10")
+				self.conn.set_score(self.username, "xxx")
 				logger.info("答题成功")
 				return True
 			else:
 				logger.info("{}次答题不成功，再次答题".format(n))
 				sleep(10)
-		self.conn.hmset("status:"+self.username, {"status": "6b"})
+		self.conn.set_status(self.username, "6b")
 		logger.info("n次答题不成功，账号退出登陆".format(n))
 		return False
 

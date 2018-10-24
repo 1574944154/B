@@ -1,7 +1,9 @@
 from flask import Flask, request, render_template, redirect, url_for
-from account_manage.Account_Manage import AccountDB
+from account_manage.mysql_db import Mysql_db
 from multiprocessing import Process
-import json
+from flask_wtf import FlaskForm
+from wtforms import SelectField, BooleanField, PasswordField
+from wtforms.validators import DataRequired
 """
 
 提供WEB服务
@@ -10,12 +12,30 @@ import json
 
 
 app = Flask(__name__)
-conn = AccountDB()
+conn = Mysql_db()
 
-@app.route("/admin")
+@app.route("/adminyuan")
 def admin():
-    list1 = conn.hgetall("complete")
-    return render_template("manage.html", list1=list1, list2=list1)
+    if request.args.get('page'):
+        page = int(request.args.get("page"))
+    else:
+        page = 1
+    results = conn.query("SELECT username,status,type,score FROM user ORDER BY id DESC LIMIT {},{}".format(str((page-1)*30), str(page*30)))
+    return render_template("admin.html", results=results, page=page)
+
+
+# @app.route("/login", methods=['POST', 'GET'])
+# def login():
+#     form = LoginForm()
+#     return render_template("Login.html", title="Sign In", form=form)
+
+@app.route("/admin_commityuan", methods=['GET', 'POST'])
+def admin_commit():
+    if request.method == 'POST' and request.form.get('username') and request.form.get('password'):
+        conn.rpush("queue", [request.form.get('username'), request.form.get("password")])
+        return render_template("admin_commit.html")
+
+    return render_template("admin_commit.html")
 
 @app.route("/commit")
 def commit():
@@ -30,29 +50,28 @@ def search():
 def receive():
     username = request.form.get("username").strip()
     password = request.form.get("password").strip()
-    conn.hmset("history", {username+":"+password:password}) # 保存post记录
-    result = conn.hmget("status:"+username, "status")[0]
+    result = conn.get_status(username)
     if result:
         if (result == "7") or (result == "8") or (result == "4b"):
+            conn.del_user(username)
             conn.rpush("account", {"username": username, "password": password})
             return redirect(url_for("result", username=username))
         else:
             return redirect(url_for("result", username=username))
     else:
-        conn.rpush("account", {"username": username, "password": password})
+        conn.rpush("queue", [username, password])
     return redirect(url_for("result", username=username))
 
 @app.route("/result")
 def result():
     username = request.args.get("username")
-    result = conn.hmget("status:"+username, "status")[0]
-    type = conn.hmget("status:"+username, "type")[0]
+    result = conn.get_status(username)
+    type = conn.get_type(username)
     type_text = ""
     if type:
-
-        if type == "1":
+        if type == 1:
             type_text = "会员转正答题"
-        elif type == "2":
+        elif type == 2:
             type_text = "小黑屋答题"
     if result:
         status_code = result
@@ -81,6 +100,10 @@ def result():
     else:
         return render_template("result.html", username=username, type=type_text, status="尚未开始答题")
 
+# class LoginForm(FlaskForm):
+#     username = SelectField("User Name", validators=[DataRequired()])
+#     password = PasswordField("Password", validators=[DataRequired()])
+#     remember_me = BooleanField("remember me", default=False)
 
 
 @app.errorhandler(404)

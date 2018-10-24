@@ -3,7 +3,7 @@ from Verification.Verification import CrackGeetest
 from lxml import etree
 import re
 import logging
-from account_manage.Account_Manage import AccountDB
+from account_manage.mysql_db import Mysql_db
 from time import sleep
 from random import randint
 import requests
@@ -11,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from config import DOWNLOAD_PIC, HEADLESS_ON, CLICK_SPEED
+from config import DOWNLOAD_PIC, CLICK_SPEED
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,13 +20,8 @@ logger = logging.getLogger(__name__)
 class Hyzz_answer(object):
 
 	def __init__(self, browser, username, password):
-		self.conn = AccountDB()
+		self.conn = Mysql_db()
 		self.browser = browser
-		# option = webdriver.ChromeOptions()
-		# option.add_argument("--no-sandbox")
-		# if HEADLESS_ON:
-		# 	option.add_argument("--headless")
-		# self.browser = webdriver.Chrome(chrome_options=option)
 		self.username = username
 		self.password = password
 		self.browser.get("http://account.bilibili.com/answer/base/#/")
@@ -51,9 +46,9 @@ class Hyzz_answer(object):
 
 	def findout(self, url, num=1):
 		try:
-			ans = self.conn.hmget(num, url[49:-39])[0]
+			ans = self.conn.get_ans("hyzz", url[49:-39])
 		except:
-			logger.error("连接redis服务器出错")
+			logger.error("获取答案失败")
 			self.browser.quit()
 			return False
 
@@ -94,7 +89,7 @@ class Hyzz_answer(object):
 			while (self.browser.current_url == current_url):
 				if re.findall("手机", self.browser.page_source, re.S):
 					logger.info("请绑定手机号码")
-					self.conn.hmset("status:"+self.username, {"status": "4"})
+					self.conn.set_status(self.username, "4")
 					self.browser.quit()
 					return False
 				try:
@@ -112,7 +107,7 @@ class Hyzz_answer(object):
 					self.browser.implicitly_wait(10)
 					if re.findall("手机", self.browser.page_source, re.S):
 						logger.info("请绑定手机号码")
-						self.conn.hmset("status:"+self.username, {"status": "4"})
+						self.conn.set_status(self.username, "4")
 						self.browser.quit()
 						return False
 
@@ -178,27 +173,6 @@ class Hyzz_answer(object):
 			return False
 
 
-	# input("：")
-
-	# 登陆
-	# def login(self):
-	#
-	# 	self.browser.find_element_by_id("login-username").send_keys(self.username)
-	# 	self.browser.find_element_by_id("login-passwd").send_keys(self.password)
-	# 	for i in range(0, 3):
-	# 		if CrackGeetest(self.browser).verify():
-	# 			self.conn.hmset("status", {self.username: "0"})
-	# 			logger.info("verify success")
-	# 			# self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[5]/a[1]').click()
-	# 			ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="login-app"]/div/div[3]/div/div/ul/li[1]/div[4]/a')).perform()
-	#
-	# 			return True
-	# 		else:
-	# 			self.browser.refresh()
-	# 			logger.info("verify fail")
-	# 			self.login()
-	# 	return False
-
 	def loop(self):
 
 		count = 0
@@ -218,12 +192,12 @@ class Hyzz_answer(object):
 						self.browser.refresh()
 						logger.info("{}服务器出错，刷新中.....".format(self.username))
 					elif "未绑定手机号" in alert:
-						self.conn.hmset("status:"+self.username, {"status": "4"})
+						self.conn.set_status(self.username, "4")
 						logger.error("{}未绑定手机号码".format(self.username))
 						self.browser.quit()
 						return False
 					elif "12小时内无法再次答题" in alert:
-						self.conn.hmset("status:"+self.username, {"status": "8"})
+						self.conn.set_status(self.username, "8")
 						logger.error("{}12小时无法答题".format(self.username))
 						self.browser.quit()
 						return False
@@ -233,30 +207,30 @@ class Hyzz_answer(object):
 
 
 				if re.findall("卷一：社区规范题（第一部分）", html, re.S) and select == 40:
-					self.conn.hmset("status:"+self.username, {"status": "1b"})
+					self.conn.set_status(str(self.username), "1b")
 					logger.info("{}第一阶段".format(self.username))
 					self.one()
-					self.conn.hmset("status:"+self.username, {"status": "1"})
+					self.conn.set_status(self.username, "1")
 
 				# 二阶段
 				elif re.findall("卷一：社区规范题（第二部分）", html, re.S) and select == 10:
-					self.conn.hmset("status:"+self.username, {"status": "2b"})
+					self.conn.set_status(self.username, "2b")
 					logger.info("{}第二阶段".format(self.username))
 					self.two()
-					self.conn.hmset("status:"+self.username, {"status": "2"})
+					self.conn.set_status(self.username, "2")
 
 				# 第三阶段
 				elif re.findall("ACG音乐", html, re.S) and re.findall("Vocaloid", html, re.S):
-					self.conn.hmset("status:"+self.username, {"status": "3b"})
+					self.conn.set_status(self.username, "3b")
 					logger.info("{}第三阶段".format(self.username))
 					self.three()
-					self.conn.hmset("status:"+self.username, {"status": "3"})
+					self.conn.set_status(self.username, "3")
 
 				elif re.findall("自选题", html, re.S) and select == 50:
-					self.conn.hmset("status:"+self.username, {"status": "3b"})
+					self.conn.set_status(self.username, "3b")
 					logger.info("{}第三阶段".format(self.username))
 					self.threeb()
-					self.conn.hmset("status:"+self.username, {"status": "3"})
+					self.conn.set_status(self.username, "3")
 
 				# 最后验证阶段
 				elif re.findall("恭喜!你的答案已提交", html, re.S):
@@ -270,7 +244,7 @@ class Hyzz_answer(object):
 							ActionChains(self.browser).move_to_element(
 								self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							logging.info("验证成功")
-							self.conn.hmset("status:"+self.username, {"status": "6b"})
+							self.conn.set_status(self.username, "6b")
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
 							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
 							sleep(5)
@@ -278,11 +252,10 @@ class Hyzz_answer(object):
 							try:
 								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
 								logger.info("{}分数为：{}".format(self.username, score))
-								self.conn.hmset("complete", {self.username: score})
-								self.conn.hmset("status:"+self.username, {"status": "6"})
+								self.conn.set_score(self.username, score)
+								self.conn.set_status(self.username, "6")
 							except:
 								logger.info("读取分数失败")
-							# self.conn.hdel("status", self.username)
 							self.browser.quit()
 							return True
 						else:
@@ -290,22 +263,10 @@ class Hyzz_answer(object):
 							self.browser.implicitly_wait(5)
 							self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div/div/div[1]').click()
 							self.browser.implicitly_wait(5)
-					self.conn.hmset("status:"+self.username, {"status": "5"})
+					self.conn.set_status(self.username, "5")
 					self.browser.refresh()
 					logger.info("错误")
 
-				# elif re.findall("12小时内无法再次答题!", html, re.S):
-				# 	self.conn.hmset("status", {self.username: "8"})
-				# 	logger.error("12小时无法答题")
-				# 	self.browser.quit()
-				# 	return False
-				# elif re.findall("检测到你未绑定手机号码", html, re.S):
-				# 	self.conn.hmset("status", {self.username: "4"})
-				# 	logger.error("未绑定手机号码")
-				# 	self.browser.quit()
-				# 	return False
-
-				# self.browser.refresh()
 				count += 1
 				logger.info("count={}".format(count))
 
@@ -317,7 +278,7 @@ class Hyzz_answer(object):
 			logger.error("异常退出{}".format(e))
 			return False
 
-		self.conn.hmset("status:"+self.username, {"status": "7"})	# 账号存在风险，需要更改密码
+		self.conn.set_status(self.username, "7")
 		self.browser.quit()
 		logger.info("超时")
 		return False

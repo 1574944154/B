@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>bibili账号管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+<body>
+	<div id="container">
+		<div class="ui_content">
+			<div class="ui_tb">
+				<table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+					<tbody><tr style="background: rgb(255, 255, 255);">
+						<th width="30"><input type="checkbox" id="all" onclick="selectOrClearAllCheckbox(this);">
+						</th>
+						<th>username</th>
+						<th>status</th>
+						<th>type</th>
+						<th>score</th>
+					</tr>
+				</tr>
+                {% for result in results%}
+				<tr style="background: rgb(255, 255, 255)" align="center">
+					<td style="color: rgb(144, 144, 144);"><input type="checkbox" name="IDCheck" value="14458619251417" class="acb"></td>
+					<td style="color: rgb(144, 144, 144);">{{result[0]}}</td>
+					<td style="color: rgb(144, 144, 144);">{{result[1]}}</td>
+					<td style="color: rgb(144, 144, 144);">{{result[2]}}</td>
+					<td style="color: rgb(144, 144, 144);">{{result[3]}}</td>
+					<td style="color: rgb(144, 144, 144);">
+						<a href="javascript:del(&#39;14458619251417&#39;);">删除</a>
+					</td>
+				</tr>
+                {% endfor %}
+
+			</tbody></table>
+		</div>
+		<div class="ui_tb_h30">
+			<div class="ui_frt">
+				<!--    如果是第一页，则只显示下一页、尾页 -->
+
+                <a href="{{url_for('admin', page=1)}}"><input type="button" value="首页" class="ui_input_btn01"></a>
+                <a href="{{url_for('admin', page=page-1)}}"><input type="button" value="上一页" class="ui_input_btn01"></a>
+                <a href="{{url_for('admin', page=page+1)}}"><input type="button" value="下一页" class="ui_input_btn01"></a>
+                <a href="{{url_for('admin_commit')}}"><input type="button" value="提交页面"></a>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

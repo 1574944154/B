@@ -4,8 +4,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import logging
-from account_manage.Account_Manage import AccountDB
-from time import sleep
+from account_manage.mysql_db import Mysql_db
 import json
 import requests
 from config import HEADLESS_ON
@@ -26,7 +25,7 @@ class Login(object):
 			options.add_argument("--headless")
 		self.browser = webdriver.Chrome(chrome_options=options)
 		self.browser.get(self.url)
-		self.conn = AccountDB()
+		self.conn = Mysql_db()
 		self.browser.implicitly_wait(20)
 
 
@@ -35,7 +34,7 @@ class Login(object):
 		self.browser.find_element_by_id("login-passwd").send_keys(self.password)
 		for i in range(0, 3):
 			if CrackGeetest(self.browser).verify():
-				self.conn.hmset("status:"+self.username, {"status": "0"})
+				self.conn.set_status(self.username, "0")
 				logger.info("verify success")
 				# try:
 				# 	WebDriverWait(self.browser, 5).until_not(EC.text_to_be_present_in_element((By.XPATH, '//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[4]/div/p'), "用户名或密码错误"))
@@ -48,27 +47,26 @@ class Login(object):
 					logger.info("登陆异常")
 					if "你的账号存在异常，请先验证你的身份" in self.browser.page_source:
 						logger.info("账号存在异常，请更改密码")
-						self.conn.hmset("status:" + self.username, {"status": "7"})
+						self.conn.set_status(self.username, "7")
 						return False
 					try:
 						WebDriverWait(self.browser, 5).until(EC.text_to_be_present_in_element(
 						(By.XPATH, '//*[@id="login-app"]/div/div[2]/div[3]/div[3]/div/div/ul/li[4]/div/p'), "用户名或密码错误"))
 					except:
 						logger.info("未知错误")
-						self.conn.hmset("user", {self.username: self.password})
+						self.conn.rpush("queue", [self.username,self.password])
 						return False
 					else:
 						logger.info("密码错误")
-						self.conn.hmset("status:" + self.username, {"status": "4b"})
+						self.conn.set_status(self.username, "4b")
 						return False
-				self.conn.hmset("user", {self.username: self.password})
+
 				logger.info("登陆成功")
 				return True
 			else:
 				self.browser.refresh()
 				logger.info("verify fail")
 				self.login()
-		self.conn.hmset("user", {self.username: self.password})
 		return False
 
 	def get_rcookie(self):
@@ -87,10 +85,10 @@ class Login(object):
 		res = requests.get(url, headers=headers, cookies=self.get_rcookie())
 		result = json.loads(res.text)
 		if result['code'] == 0:
-			self.conn.hmset("status:"+self.username, {"type": "2"})
+			self.conn.set_type(self.username, 2)
 			return True
 		else:
-			self.conn.hmset("status:"+self.username, {"type": "1"})
+			self.conn.set_type(self.username, 1)
 			return False
 
 	def __del__(self):

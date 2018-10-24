@@ -2,23 +2,22 @@ import json
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from config import MAX_PROCESS, RATE, ACCOUNT_DB_NAME
+from config import MAX_PROCESS, RATE
 from Answer.login import Login
 from Answer.hyzz_answer import Hyzz_answer
-from account_manage.Account_Manage import AccountDB
+from account_manage.mysql_db import Mysql_db
 from Answer.xhw_answer import Xhwanser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def task():
-    conn = AccountDB()
-    account = conn.lpop(ACCOUNT_DB_NAME)
+    conn = Mysql_db()
+    account = conn.lpop("queue")
     if account:
-        account = json.loads(account.replace("'", '"'))
-        username = account['username']
-        password = account['password']
-        conn.hmset("status:"+username, {"status": "-1"})
+        username = account[0]
+        password = account[1]
+        conn.insert_user([username,password])
         user = Login(username, password)
         pass_correct = user.login()
         if pass_correct:

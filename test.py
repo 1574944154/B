@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from apscheduler.schedulers.blocking import BlockingScheduler
 import time
+import pymysql
 
 def remove():
 	conn = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
@@ -20,23 +21,22 @@ def remove():
 		conn.hdel("status", i)
 
 def move():
-	conn0 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=1, password="yuanjie"))
-	conn1 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=4, password="yuanjie"))
-	results = conn0.hgetall("1")
-	for k, v in results.items():
-		conn1.hmset("1", {k.decode("utf-8"): v.decode("utf-8")})
-		print(k, v)
-
-
+	conn0 = Redis(connection_pool=BlockingConnectionPool(host="39.106.122.164", db=4, password="yuanjie", decode_responses=True))
+	db = pymysql.connect(host="127.0.0.1", user="root", password="yuanjie", database="bilibili_account")
+	cursor = db.cursor()
+	for i in range(1,23000):
+		result = conn0.get("bilibili:"+str(i)+":answer")
+		if result:
+			cursor.execute("INSERT INTO xhw(id,ans) VALUES ('{}','{}')".format(str(i), result))
+			db.commit()
 
 
 def test():
-	b = webdriver.Chrome()
-	b.get("https://www.bilibili.com/video/av12097513")
-	with open("source_page.txt", "w", encoding="utf-8") as f:
-		f.write(b.page_source)
+	ss = (('19923393852', '6', 1, 84), ('17080622562', '10', 2, None), ('15683956189', '6', 1, 76))
+	for one in ss:
+		print(one)
 
 
 
 if __name__ == '__main__':
-	move()
+	test()

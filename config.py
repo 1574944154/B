@@ -2,9 +2,18 @@
 """
 redis数据库连接信息
 """
-REDIS_HOST = "39.106.122.164"
+REDIS_HOST = ""
 REDIS_DB = 4
-REDIS_PASSWORD = "yuanjie"
+REDIS_PASSWORD = ""
+
+
+"""
+MySQL数据可链接信息
+"""
+MYSQL_HOST = ""
+MYSQL_USER = "root"
+MYSQL_PASSWORD = ""
+MYSQL_DB = ""
 
 
 """
