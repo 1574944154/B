@@ -61,6 +61,7 @@ class Login(object):
 			else:
 				self.browser.refresh()
 				logger.info("verify fail")
+				self.login()
 		return False
 
 	def get_rcookie(self):
@@ -90,6 +91,10 @@ class Login(object):
 
 
 
+
+
+
+
 if __name__ == '__main__':
-    user = Login("19923393852", "a510b630")
+    user = Login("19923393852", "a510b63")
     user.login()

@@ -18,7 +18,7 @@
     <div class="alert alert-warning alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
         <strong>提示!</strong>提交一次即可，请不要重复提交
-        <a href="url_for('search')">查询答题进度</a>
+        <a href="{{url_for('search')}}">查询答题进度</a>
     </div>
         <form action={{url_for("receive")}} method="post">
         <div class="form-group">

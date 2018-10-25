@@ -86,6 +86,6 @@ class Xhwanser(object):
 		return False
 
 if __name__ == '__main__':
-	cookies = {"finger": "edc6ecda","buvid3": "8EC49093-52F7-4CC2-B2DD-9157984E1E4D23112infoc","LIVE_BUVID": "AUTO7615400263398273","sid": "daub972m","DedeUserID": "40881595","DedeUserID__ckMd5": "e9ae6a8b43f1ba19","SESSDATA": "9c80637d%2C1542618359%2C0a7451ce","bili_jct": "eb8e5719856581cdbc9bbd764ea13126","_dfcaptcha": "1987395f30d8c5ad6c722ff0823487c6","im_notify_type_40881595": "0","fts": "1540029077"}
+	cookies = {"finger": "edc6ecda","buvid3": "5C4C7AB4-D98F-451E-91DF-06458AF7A41013550infoc","LIVE_BUVID": "AUTO3215403812220900","sid": "js3c8l38","DedeUserID": "65713828","DedeUserID__ckMd5": "60c7f449ec0f701e","SESSDATA": "23558a52%2C1542973278%2Cf24b210b","bili_jct": "7b499a19c1e1e3fccd29ac6199d0fe42","_dfcaptcha": "9ba783581def0f53bccb8283193c9b9b"}
 	ans = Xhwanser(cookies, "152654")
 	ans.loop()

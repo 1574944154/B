@@ -40,8 +40,10 @@ def commit():
 
 @app.route("/search", methods=['POST', 'GET'])
 def search():
-    username = request.form.get("username")
-    return redirect(url_for("result", username=username))
+    if request.method == "POST":
+        username = request.form.get("username")
+        return redirect(url_for("result", username=username))
+    return render_template("search.html")
 
 @app.route("/receive", methods=["POST"])
 def receive():
@@ -51,7 +53,7 @@ def receive():
     if result:
         if (result == "7") or (result == "8") or (result == "4b"):
             conn.del_user(username)
-            conn.rpush("account", {"username": username, "password": password})
+            conn.rpush("queue", [username, password])
             return redirect(url_for("result", username=username))
         else:
             return redirect(url_for("result", username=username))

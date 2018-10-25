@@ -86,7 +86,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("UPDATE user SET type={} WHERE username={}".format(type, username))
+			cursor.execute("UPDATE user SET type={} WHERE username='{}'".format(type, username))
 			db.commit()
 			return True
 		except Exception as e:
@@ -103,7 +103,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("SELECT status FROM user WHERE username={}".format(username))
+			cursor.execute("SELECT status FROM user WHERE username='{}'".format(username))
 			result = cursor.fetchone()
 			if result:
 				return result[0]
@@ -124,7 +124,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("SELECT type FROM user WHERE username={}".format(username))
+			cursor.execute("SELECT type FROM user WHERE username='{}'".format(username))
 			result = cursor.fetchone()
 			if result:
 				return result[0]
