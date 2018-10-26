@@ -274,7 +274,7 @@ class Hyzz_answer(object):
 		except Exception as e:
 			# self.conn.hmset("status", {self.username: "异常退出"})
 			self.browser.quit()
-			self.conn.rpush("account", {"username":self.username, "password": self.password})
+			self.conn.rpush("queue", [self.username, self.password])
 			logger.error("异常退出{}".format(e))
 			return False
 

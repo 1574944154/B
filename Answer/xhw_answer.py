@@ -75,7 +75,7 @@ class Xhwanser(object):
 		while(n<10):
 			if self.answer():
 				self.conn.set_status(self.username, "10")
-				self.conn.set_score(self.username, "xxx")
+				self.conn.set_score(self.username, "100")
 				logger.info("答题成功")
 				return True
 			else:

@@ -21,10 +21,6 @@ def admin():
     return render_template("admin.html", results=results, page=page)
 
 
-# @app.route("/login", methods=['POST', 'GET'])
-# def login():
-#     form = LoginForm()
-#     return render_template("Login.html", title="Sign In", form=form)
 
 @app.route("/admin_commityuan", methods=['GET', 'POST'])
 def admin_commit():

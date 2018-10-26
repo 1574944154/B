@@ -85,8 +85,8 @@ class Login(object):
 			self.conn.set_type(self.username, 1)
 			return False
 
-	def __del__(self):
-		self.browser.quit()
+	# def __del__(self):
+	# 	self.browser.quit()
 
 
 
