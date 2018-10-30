@@ -17,10 +17,8 @@ def admin():
         page = int(request.args.get("page"))
     else:
         page = 1
-    results = conn.query("SELECT username,status,type,score FROM user ORDER BY id DESC LIMIT {},{}".format(str((page-1)*30), str(page*30)))
+    results = conn.query("SELECT username,status,type,score,ip FROM user ORDER BY id DESC LIMIT {},{}".format(str((page-1)*30), str(page*30)))
     return render_template("admin.html", results=results, page=page)
-
-
 
 @app.route("/admin_commityuan", methods=['GET', 'POST'])
 def admin_commit():
@@ -45,16 +43,17 @@ def search():
 def receive():
     username = request.form.get("username").strip()
     password = request.form.get("password").strip()
+    ip = request.remote_addr
     result = conn.get_status(username)
     if result:
         if (result == "7") or (result == "8") or (result == "4b"):
             conn.del_user(username)
-            conn.rpush("queue", [username, password])
+            conn.rpush("queue", [username, password, ip])
             return redirect(url_for("result", username=username))
         else:
             return redirect(url_for("result", username=username))
     else:
-        conn.rpush("queue", [username, password])
+        conn.rpush("queue", [username, password, ip])
     return redirect(url_for("result", username=username))
 
 @app.route("/result")
@@ -94,11 +93,6 @@ def result():
         return render_template("result.html", username=username, type=type_text, status=status)
     else:
         return render_template("result.html", username=username, type=type_text, status="尚未开始答题")
-
-# class LoginForm(FlaskForm):
-#     username = SelectField("User Name", validators=[DataRequired()])
-#     password = PasswordField("Password", validators=[DataRequired()])
-#     remember_me = BooleanField("remember me", default=False)
 
 
 @app.errorhandler(404)

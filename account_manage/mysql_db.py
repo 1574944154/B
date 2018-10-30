@@ -37,7 +37,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("INSERT INTO user(username,password) VALUES ('{}','{}')".format(dp[0],dp[1]))
+			cursor.execute("INSERT INTO user(username,password,ip) VALUES ('{}','{}','{}')".format(dp[0],dp[1],dp[2]))
 			db.commit()
 			return True
 		except Exception as e:
@@ -173,7 +173,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("SELECT username,password FROM {} ORDER BY id LIMIT 1".format(table))
+			cursor.execute("SELECT username,password,ip FROM {} ORDER BY id LIMIT 1".format(table))
 			result = cursor.fetchone()
 			if result:
 				cursor.execute("DELETE FROM {} ORDER BY id LIMIT 1".format(table))
@@ -193,7 +193,7 @@ class Mysql_db(object):
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("INSERT INTO {}(username, password) VALUES ('{}','{}')".format(table,up[0],up[1]))
+			cursor.execute("INSERT INTO {}(username, password, ip) VALUES ('{}','{}', '{}')".format(table,up[0],up[1],up[2]))
 			db.commit()
 			return True
 		except:

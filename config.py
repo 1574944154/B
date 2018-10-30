@@ -10,9 +10,9 @@ REDIS_PASSWORD = ""
 """
 MySQL数据可链接信息
 """
-MYSQL_HOST = "127.0.0.1"
+MYSQL_HOST = ""
 MYSQL_USER = "root"
-MYSQL_PASSWORD = "yuanjie"
+MYSQL_PASSWORD = ""
 MYSQL_DB = "bilibili_account"
 
 

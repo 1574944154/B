@@ -17,7 +17,8 @@ def task():
     if account:
         username = account[0]
         password = account[1]
-        conn.insert_user([username,password])
+        ip = account[2]
+        conn.insert_user([username,password,ip])
         user = Login(username, password)
         pass_correct = user.login()
         if pass_correct:

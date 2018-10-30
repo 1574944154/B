@@ -4,6 +4,11 @@
 	<title>bibili账号管理</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<style>
+		.a {
+			color: rgb(144, 144, 144);
+		}
+	</style>
 </head>
 <body>
 	<div id="container">
@@ -17,16 +22,18 @@
 						<th>status</th>
 						<th>type</th>
 						<th>score</th>
+                        <th>ip</th>
 					</tr>
 				</tr>
                 {% for result in results%}
 				<tr style="background: rgb(255, 255, 255)" align="center">
-					<td style="color: rgb(144, 144, 144);"><input type="checkbox" name="IDCheck" value="14458619251417" class="acb"></td>
-					<td style="color: rgb(144, 144, 144);">{{result[0]}}</td>
-					<td style="color: rgb(144, 144, 144);">{{result[1]}}</td>
-					<td style="color: rgb(144, 144, 144);">{{result[2]}}</td>
-					<td style="color: rgb(144, 144, 144);">{{result[3]}}</td>
-					<td style="color: rgb(144, 144, 144);">
+					<td class="a"><input type="checkbox" name="IDCheck" value="14458619251417" class="acb"></td>
+					<td class="a">{{result[0]}}</td>
+					<td class="a">{{result[1]}}</td>
+					<td class="a">{{result[2]}}</td>
+					<td class="a">{{result[3]}}</td>
+                    <td class="a">{{result[4]}}</td>
+					<td class="a">
 						<a href="javascript:del(&#39;14458619251417&#39;);">删除</a>
 					</td>
 				</tr>
