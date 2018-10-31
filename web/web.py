@@ -23,7 +23,7 @@ def admin():
 @app.route("/admin_commityuan", methods=['GET', 'POST'])
 def admin_commit():
     if request.method == 'POST' and request.form.get('username') and request.form.get('password'):
-        conn.rpush("queue", [request.form.get('username'), request.form.get("password")])
+        conn.rpush("queue", [request.form.get('username'), request.form.get("password"), request.remote_addr])
         return render_template("admin_commit.html")
 
     return render_template("admin_commit.html")
