@@ -8,14 +8,14 @@ from account_manage.mysql_db import Mysql_db
 import json
 import requests
 from config import HEADLESS_ON
-
+from time import sleep
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Login(object):
-	url = "https://passport.bilibili.com/login?gourl=https%3A%2F%2Faccount.bilibili.com%2Faccount%2Fhome"
+	url = "http://account.bilibili.com/answer/base/#/"
 	def __init__(self, username, password):
 		self.username = username
 		self.password = password
@@ -36,8 +36,10 @@ class Login(object):
 			if CrackGeetest(self.browser).verify():
 				self.conn.set_status(self.username, "0")
 				logger.info("verify success")
+				sleep(5)
+				# self.browser.get("https://account.bilibili.com/account/home")
 				try:
-					WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ser-ul"]/li[1]')))
+					WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[2]/div[1]/div/div[1]/h2')))
 				except:
 					logger.info("登陆异常")
 					if "你的账号存在异常，请先验证你的身份" in self.browser.page_source:

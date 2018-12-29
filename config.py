@@ -10,10 +10,10 @@ REDIS_PASSWORD = ""
 """
 MySQL数据可链接信息
 """
-MYSQL_HOST = "127.0.0.1"
+MYSQL_HOST = "39.106.122.164"
 MYSQL_USER = "root"
-MYSQL_PASSWORD = "yuanjie"
-MYSQL_DB = "bilibili_account"
+MYSQL_PASSWORD = "a510b630"
+MYSQL_DB = "dati_rawdata"
 
 
 """
@@ -38,7 +38,7 @@ ANSWER
 """
 
 DOWNLOAD_PIC = False
-CLICK_SPEED = 10
+CLICK_SPEED = 4
 
 
 

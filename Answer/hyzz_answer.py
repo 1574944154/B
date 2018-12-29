@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from config import DOWNLOAD_PIC, CLICK_SPEED
+from MD5.get_md5 import Update_md5
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,8 +46,22 @@ class Hyzz_answer(object):
 		logging.info("下载图片{}/{}".format(num, url[49:-35]))
 
 	def findout(self, url, num=1):
+		md5 = Update_md5(url[17:-35]).getFileMD5()
+		if(num==1):
+			table = "ans1_api"
+		elif(num==3):
+			table = "ans3_api"
+		print(md5)
 		try:
-			ans = self.conn.get_ans("hyzz", url[49:-39])
+			ans = self.conn.get_ans(table, md5)
+			if ans=='A':
+				ans=1
+			elif ans=='B':
+				ans=2
+			elif ans=='C':
+				ans=3
+			elif ans=='D':
+				ans=4
 		except:
 			logger.error("获取答案失败")
 			self.browser.quit()
@@ -66,7 +81,6 @@ class Hyzz_answer(object):
 		results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
 		for index, url in enumerate(results, 1):
 			# md5 = result[49:-39]
-
 			self.click(index, self.findout(url))
 
 		self.browser.find_element_by_css_selector(".footer-bottom").click()
@@ -134,24 +148,24 @@ class Hyzz_answer(object):
 		logger.info("自选题--选题")
 		self.browser.implicitly_wait(4)
 		# 选题自选题科目
-		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[4]/ul/li[1]').click()
+		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[3]/ul/li[1]').click()
 		sleep(1)
-		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[4]/ul/li[2]').click()
+		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[3]/ul/li[6]').click()
 		sleep(1)
-		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[4]/ul/li[3]').click()
+		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li[3]/ul/li[9]').click()
 		sleep(1)
-		self.browser.find_element_by_css_selector(".btn-width").click()
-		sleep(1)
-		self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[3]/div/div/div/div/p/a').click()
-		sleep(2)
-		self.browser.implicitly_wait(15)
-
-		selector = etree.HTML(self.browser.page_source)
-		results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
-		for index, url in enumerate(results, 1):
-			# md5 = result[49:-39]
-			self.click(index, self.findout(url, 3))
-		self.browser.find_element_by_css_selector(".footer-bottom").click()
+		# self.browser.find_element_by_css_selector(".btn-width").click()
+		# sleep(1)
+		# self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[3]/div/div/div/div/p/a').click()
+		# sleep(2)
+		# self.browser.implicitly_wait(15)
+		#
+		# selector = etree.HTML(self.browser.page_source)
+		# results = selector.xpath('//*[@id="app"]/div[2]/div[2]/div[1]/div/ul/li/div/div[2]/@style')
+		# for index, url in enumerate(results, 1):
+		# 	# md5 = result[49:-39]
+		# 	self.click(index, self.findout(url, 3))
+		self.browser.find_element_by_css_selector(".btn-width[data-v-0b9f0cb2]").click()
 		sleep(2)
 		try:
 			WebDriverWait(self.browser, 40).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div/p[1]')))
@@ -220,7 +234,7 @@ class Hyzz_answer(object):
 					self.conn.set_status(self.username, "2")
 
 				# 第三阶段
-				elif re.findall("ACG音乐", html, re.S) and re.findall("Vocaloid", html, re.S):
+				elif re.findall("军事", html, re.S) and re.findall("物理", html, re.S):
 					self.conn.set_status(self.username, "3b")
 					logger.info("{}第三阶段".format(self.username))
 					self.three()
@@ -246,18 +260,19 @@ class Hyzz_answer(object):
 							logging.info("验证成功")
 							self.conn.set_status(self.username, "6b")
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
-							ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div/div[2]/div/span'))
-							sleep(5)
-							WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]')))
-							try:
-								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
-								logger.info("{}分数为：{}".format(self.username, score))
-								self.conn.set_score(self.username, score)
-								self.conn.set_status(self.username, "6")
-							except:
-								logger.info("读取分数失败")
-							self.browser.quit()
-							return True
+							sleep(15)
+							# WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]')))
+							# try:
+							# 	score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
+							# 	logger.info("{}分数为：{}".format(self.username, score))
+							# 	self.conn.set_score(self.username, score)
+							# 	self.conn.set_status(self.username, "6")
+							# except:
+							# 	logger.info("读取分数失败")
+							# self.browser.quit()
+							# return True
+							self.conn.set_status(6)
+							self.conn.set_score("99")
 						else:
 							self.browser.refresh()
 							self.browser.implicitly_wait(5)
@@ -267,8 +282,8 @@ class Hyzz_answer(object):
 					self.browser.refresh()
 					logger.info("错误")
 
-				count += 1
-				logger.info("count={}".format(count))
+					count += 1
+					logger.info("count={}".format(count))
 
 
 		except Exception as e:

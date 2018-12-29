@@ -49,11 +49,13 @@ class Mysql_db(object):
 
 
 	def get_ans(self, table, id):
+		"SELECT ans FROM `ans1_api` where img_md5='63AC0D3FBA30C50E1AB6D58ADA151883'"
 		db = self.__getconn()
 		cursor = db.cursor()
 		try:
-			cursor.execute("SELECT ans FROM {} WHERE id='{}'".format(table, id))
+			cursor.execute("SELECT ans FROM {} where img_md5='{}'".format(table, id))
 			result = cursor.fetchone()
+			# print(result)
 			if result:
 				return result[0]
 			else:
@@ -220,4 +222,4 @@ class Mysql_db(object):
 			db.close()
 
 if __name__ == '__main__':
-	print(Mysql_db().query("SELECT username,status,type,score FROM user ORDER BY id DESC"))
+	print(Mysql_db().get_ans("ans1_api",'63AC0D3FBA30C50E1AB6D58ADA151883'))
