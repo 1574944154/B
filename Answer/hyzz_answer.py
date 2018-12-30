@@ -261,18 +261,18 @@ class Hyzz_answer(object):
 							self.conn.set_status(self.username, "6b")
 							self.browser.find_element_by_css_selector('.btn-width[data-v-71b9c235]').click()
 							sleep(15)
-							# WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]')))
-							# try:
-							# 	score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div[1]/div[4]/span[1]/i[2]/text()')[0]
-							# 	logger.info("{}分数为：{}".format(self.username, score))
-							# 	self.conn.set_score(self.username, score)
-							# 	self.conn.set_status(self.username, "6")
-							# except:
-							# 	logger.info("读取分数失败")
-							# self.browser.quit()
-							# return True
-							self.conn.set_status(6)
-							self.conn.set_score("99")
+							WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div[2]/div[1]/div/div/div/div[3]/span')))
+							try:
+								score = etree.HTML(self.browser.page_source).xpath('//*[@id="app"]/div[2]/div[1]/div/div/div/div[3]/span/i[2]/text()')[0]
+								logger.info("{}分数为：{}".format(self.username, score))
+								self.conn.set_score(self.username, score)
+								self.conn.set_status(self.username, "6")
+							except:
+								logger.info("读取分数失败")
+							self.browser.quit()
+							return True
+							# self.conn.set_status(self.username, "6")
+							# self.conn.set_score("99")
 						else:
 							self.browser.refresh()
 							self.browser.implicitly_wait(5)

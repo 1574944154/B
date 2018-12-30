@@ -10,9 +10,9 @@ REDIS_PASSWORD = ""
 """
 MySQL数据可链接信息
 """
-MYSQL_HOST = "39.106.122.164"
+MYSQL_HOST = ""
 MYSQL_USER = "root"
-MYSQL_PASSWORD = "a510b630"
+MYSQL_PASSWORD = ""
 MYSQL_DB = "dati_rawdata"
 
 
